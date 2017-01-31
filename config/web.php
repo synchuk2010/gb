@@ -3,9 +3,20 @@
 $params = require(__DIR__ . '/params.php');
 
 $config = [
-    'id' => 'basic',
+    'id' => 'gb',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
+    /*
+     * Конфигурация языка, которая переводит некоторые стандартные выводы в системе
+     * (например главную страницу в хлебных крошках, тексты ошибок и т.д.).
+     * Также задаёт свой (не особо приемлемый для приложения) формат даты.
+     * Это переопределяется ниже.
+     * */
+    'language' => 'ru-RU',
+    'sourceLanguage' => 'ru-RU',
+    // Маршрут по-умолчанию
+    'defaultRoute' => 'main',
+    // Настройка компонентов
     'components' => [
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
@@ -17,9 +28,10 @@ $config = [
         'user' => [
             'identityClass' => 'app\models\User',
             'enableAutoLogin' => true,
+            'loginUrl' => ['main/login'],
         ],
         'errorHandler' => [
-            'errorAction' => 'site/error',
+            'errorAction' => 'main/error',
         ],
         'mailer' => [
             'class' => 'yii\swiftmailer\Mailer',
@@ -39,13 +51,21 @@ $config = [
         ],
         'db' => require(__DIR__ . '/db.php'),
         /*
+         * Настройка urlManager для отображения ЧПУ.
+         * Если вы хотите чтобы приложение отображалось по вызову articles,
+         * а не articles/web, вам нужно настроить виртуальные хосты на вашем веб-сервере
+         * */
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'rules' => [
-            ],
         ],
-        */
+        /*
+         * Настройка форматирования. Задаём формат передаваемой даты, чтобы работали
+         * фильтры даты GridView в панели администрирования.
+         * */
+        'formatter' => [
+            'dateFormat' => 'yyyy-MM-dd',
+        ],
     ],
     'params' => $params,
 ];

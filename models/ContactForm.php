@@ -14,6 +14,9 @@ class ContactForm extends Model
     public $email;
     public $subject;
     public $body;
+    /**
+     * @var $verifyCode string код подтверждения для капчи
+     * */
     public $verifyCode;
 
 
@@ -27,8 +30,8 @@ class ContactForm extends Model
             [['name', 'email', 'subject', 'body'], 'required'],
             // email has to be a valid email address
             ['email', 'email'],
-            // verifyCode needs to be entered correctly
-            ['verifyCode', 'captcha'],
+            //
+            ['verifyCode', 'captcha', 'captchaAction' => 'main/captcha'],
         ];
     }
 

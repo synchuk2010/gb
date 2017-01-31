@@ -51,8 +51,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     <?= $form->field($model, 'body')->textarea(['rows' => 6]) ?>
 
-                    <?= $form->field($model, 'verifyCode')->widget(Captcha::className(), [
-                        'template' => '<div class="row"><div class="col-lg-3">{image}</div><div class="col-lg-6">{input}</div></div>',
+                    <?= $form->field($model, 'verifyCode')->label('Код подтверждения')->widget(Captcha::className(), [
+                        // Чтобы предотвратить спам, добавляем капчу
+                        'captchaAction' => 'main/captcha',
+                        'template' => '<div class="row"><div class="col-lg-4">{image}</div><div class="col-lg-3">{input}</div></div>',
+                        'class' => 'form-control input-sm'
                     ]) ?>
 
                     <div class="form-group">
