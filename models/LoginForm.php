@@ -6,76 +6,94 @@ use Yii;
 use yii\base\Model;
 
 /**
- * LoginForm is the model behind the login form.
- *
- * @property User|null $user This property is read-only.
- *
- */
+ * Модель для формы входа пользователя
+ * */
 class LoginForm extends Model
 {
-    public $username;
+    /**
+     * @var $email string переданный email
+     * */
+    public $email;
+    /**
+     * @var $password string переданный пароль
+     * */
     public $password;
+    /**
+     * @var $rememberMe bool флаг "Запомнить меня"
+     * */
     public $rememberMe = true;
-
+    /**
+     * @var $_user User|false найденный пользователь (false, если пользователь не найден)
+     * */
     private $_user = false;
 
-
     /**
-     * @return array the validation rules.
-     */
+     * @inheritdoc
+     * */
     public function rules()
     {
         return [
-            // username and password are both required
-            [['username', 'password'], 'required'],
-            // rememberMe must be a boolean value
+            // Email и пароль обязательны
+            [['email', 'password'], 'required'],
+            // Email должен быть в правильном формате
+            ['email', 'email'],
+            // rememberMe должна быть логическим значением
             ['rememberMe', 'boolean'],
-            // password is validated by validatePassword()
+            // Валидацией пароля занимается validatePassword()
             ['password', 'validatePassword'],
         ];
     }
 
     /**
-     * Validates the password.
-     * This method serves as the inline validation for password.
+     * Производит валидацию пароля.
+     * Метод, осуществляющий валидацию пароля, введённого пользователем.
      *
-     * @param string $attribute the attribute currently being validated
-     * @param array $params the additional name-value pairs given in the rule
+     * @param string $attribute аттрибут, который подлежит валидации
      */
-    public function validatePassword($attribute, $params)
+    public function validatePassword($attribute)
     {
+        // Если в модели нет ошибок
         if (!$this->hasErrors()) {
+            // Ищем пользователя в источнике данных
             $user = $this->getUser();
 
-            if (!$user || !$user->validatePassword($this->password)) {
-                $this->addError($attribute, 'Incorrect username or password.');
+            // Если пользователь не найден, или его пароль не совпадает с хранящимся в базе
+            if (!$user || !Yii::$app->getSecurity()->validatePassword($this->password, $user->password)) {
+                // Добавляем ошибку к данному атрибуту модели
+                $this->addError($attribute, 'Неверный логин или пароль.');
             }
         }
     }
 
     /**
-     * Logs in a user using the provided username and password.
-     * @return bool whether the user is logged in successfully
+     * Аутентифицирует пользователя по заданным email и паролю.
+     *
+     * @return bool истина/ложь, в зависимости от успеха
      */
     public function login()
     {
+        // Если модель проходит валидацию
         if ($this->validate()) {
+            // Аутентифицируем пользователя (если установлен флаг "Запомнить меня", запоминаем пользователя)
             return Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600*24*30 : 0);
         }
+        // Возвращаем ложь
         return false;
     }
 
     /**
-     * Finds user by [[username]]
+     * Находит пользователя по [[email]]
      *
-     * @return User|null
+     * @return User|null если пользователь не найден, вернётся false
      */
     public function getUser()
     {
+        // Если пользователь не установлен
         if ($this->_user === false) {
-            $this->_user = User::findByUsername($this->username);
+            // Пытаемся найти его в таблице
+            $this->_user = User::findOne(['email' => $this->email]);
         }
-
+        // Возвращаем пользователя
         return $this->_user;
     }
 }

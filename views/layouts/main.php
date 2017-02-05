@@ -30,7 +30,7 @@ AppAsset::register($this);
         'brandLabel' => 'My Company',
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
-            'class' => 'navbar-inverse navbar-fixed-top',
+            'class' => 'navbar-default navbar-fixed-top',
         ],
     ]);
     echo Nav::widget([
@@ -40,12 +40,18 @@ AppAsset::register($this);
             ['label' => 'About', 'url' => ['/main/about']],
             ['label' => 'Contact', 'url' => ['/main/contact']],
             Yii::$app->user->isGuest ? (
-                ['label' => 'Login', 'url' => ['/main/login']]
+                [
+                    'label' => 'Войти/Зарегистрироваться',
+                    'items' => [
+                        ['label' => 'Войти', 'url' => '/main/login'],
+                        ['label' => 'Зарегистрироваться', 'url' => '/main/register']
+                    ]
+                ]
             ) : (
                 '<li>'
                 . Html::beginForm(['/main/logout'], 'post')
                 . Html::submitButton(
-                    'Logout (' . Yii::$app->user->identity->username . ')',
+                    'Logout (' . Yii::$app->user->identity->name . ')',
                     ['class' => 'btn btn-link logout']
                 )
                 . Html::endForm()

@@ -6,8 +6,9 @@ use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
-use app\models\LoginForm;
+use app\models\AuthForm;
 use app\models\ContactForm;
+use app\models\User;
 
 class MainController extends Controller
 {
@@ -74,11 +75,67 @@ class MainController extends Controller
             return $this->goHome();
         }
 
-        $model = new LoginForm();
+        $model = new AuthForm();
+        $model->scenario = AuthForm::SCENARIO_LOGIN;
+
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             return $this->goBack();
         }
         return $this->render('login', [
+            'model' => $model,
+        ]);
+    }
+
+    /*
+     *
+     * */
+    public function actionRegister()
+    {
+        if (!Yii::$app->user->isGuest) {
+            return $this->goHome();
+        }
+
+        $model = new AuthForm();
+        $model->scenario = AuthForm::SCENARIO_REGISTER;
+
+        if($model->load(Yii::$app->request->post()) && $model->register())
+        {
+            Yii::$app->session->setFlash('alert', 'Вы успешно зарегистрировались! Для подтверждения регистрации 
+                                                        перейдите по ссылке, указанной в email');
+            return $this->goHome();
+        }
+
+        return $this->render('register', [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionAuth($type)
+    {
+        if (!Yii::$app->user->isGuest) {
+            return $this->goHome();
+        }
+
+        $model = new LoginForm();
+        $model->scenario = ($type == 'login') ? LoginForm::SCENARIO_LOGIN : LoginForm::SCENARIO_REGISTER;
+
+        if($model->load(Yii::$app->request->post()) && $model->auth($model->scenario))
+        {
+            if($model->scenario == 'register') {
+                Yii::$app->session->setFlash('alert', 'Вы успешно зарегистрировались! Для подтверждения регистрации 
+                                                        перейдите по ссылке, указанной в email');
+                $user = User::findOne(['email' => $model->email]);
+                Yii::$app->mailer->compose('register', [
+                        'hash' => $user->hash,
+                    ])
+                    ->setFrom(Yii::$app->params['adminEmail'])
+                    ->setTo($model->email)
+                    ->setSubject('Регистрация в гостевой книге')
+                    ->send();
+            }
+            return $this->goHome();
+        }
+        return $this->render('auth', [
             'model' => $model,
         ]);
     }
