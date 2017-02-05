@@ -47,7 +47,7 @@ class AuthForm extends Model
         // Возвращаем правила работы сценариев
         return [
             // В сценарии для логина нужен только email и пароль
-            self::SCENARIO_LOGIN => ['email', 'password', 'rememberMe'],
+            self::SCENARIO_LOGIN => ['email', 'password'],
             // В сценарии для регистрации, нужен email, пароль и код подтверждения
             self::SCENARIO_REGISTER => ['email', 'password', 'verifyCode'],
         ];
@@ -58,12 +58,16 @@ class AuthForm extends Model
      * */
     public function rules()
     {
-        // Указываем правило валидации для капчи
+        // Указываем правила валидации
         return [
-            // Логин и пароль обязательны
+            // Email и пароль обязательны
             [['email', 'password'], 'required'],
+            // Email должен быть в правильном формате
             ['email', 'email'],
+            // Если пользователь регистрируется - проверяем есть ли такой email в базе
             ['email', 'validateEmail', 'on' => self::SCENARIO_REGISTER],
+            // Если пользователь входит - проверяем, перешёл ли он по ссылке в email
+            ['email', 'checkHash', 'on' => self::SCENARIO_LOGIN],
             // rememberMe должна быть логическим значением
             ['rememberMe', 'boolean'],
             // Валидацией пароля занимается validatePassword()
@@ -95,20 +99,46 @@ class AuthForm extends Model
     }
 
     /**
-     * Производит валидацию email.
+     * Производит валидацию email при регистрации.
      * Если email существует в базе, форма не будет отправлена.
      *
      * @param $attribute string атрибут, содержащий email
      * */
     public function validateEmail($attribute)
     {
+        // Если до этого не было ошибок
         if(!$this->hasErrors())
         {
+            // Получаем пользователя по его email
             $user = $this->getUser();
-
+            // Если пользователь с таким email существует
             if($user != false)
             {
+                // Добавляем ошибку модели
                 $this->addError($attribute, 'Пользователь с таким email уже существует.');
+            }
+        }
+    }
+
+    /**
+     * Производит валидацию email при входе пользователя.
+     * Если пользователь не перешёл по ссылке активации, он не будет аутентифицирован.
+     *
+     * @param $attribute string атрибут, содержащий email
+     * */
+    public function checkHash($attribute)
+    {
+        // Если до этого не было ошибок
+        if(!$this->hasErrors())
+        {
+            // Получаем пользователя
+            $user = $this->getUser();
+            // Если у пользователя установлен хэш
+            if($user->hash != null)
+            {
+                // Значит ему нужно перейти по ссылке в письме
+                $this->addError($attribute, 'Ваш email не подтверждён. Чтобы его подтвердить, используйте присланное Вам 
+                                                письмо активации.');
             }
         }
     }
@@ -149,9 +179,10 @@ class AuthForm extends Model
             // Сохраняем пользовтеля
             $user->save();
 
+            // Возвращаем результат отправки письма
             return Yii::$app->mailer->compose('register', [
-                'hash' => $user->hash,
-            ])
+                    'hash' => $user->hash,
+                ])
                 ->setFrom(Yii::$app->params['adminEmail'])
                 ->setTo($user->email)
                 ->setSubject('Регистрация в гостевой книге')

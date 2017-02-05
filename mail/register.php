@@ -1,7 +1,7 @@
 <?php
 
 use yii\helpers\Html;
-use yii\helpers\Url;
+// use yii\helpers\Url;
 
 /* @var $this \yii\web\View объект компонента вида */
 /* @var $message \yii\mail\BaseMessage объект созданного сообщения */
@@ -15,4 +15,4 @@ $this->title = 'Регистрация в гостевой книге';
     Вы успешно зарегистрировались в нашей гостевой книге. Остался лишь последний шаг - подтвердить свой email.
     Для этого нажмите на кнопку, расположенную ниже:
 </p>
-<?= Html::a('Подтвердить email', Url::to(['main/confirm', 'hash' => $hash ])) ?>
+<?= Html::a('Подтвердить email', Yii::$app->params['emailConfirmUrl'] . '?hash=' . $hash) ?>

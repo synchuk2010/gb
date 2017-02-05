@@ -8,6 +8,7 @@ use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
+use yii\bootstrap\Alert;
 
 AppAsset::register($this);
 ?>
@@ -66,6 +67,20 @@ AppAsset::register($this);
         <?= Breadcrumbs::widget([
             'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
         ]) ?>
+        <?php
+            // Если в сессии передано уведомление
+            if(Yii::$app->session->hasFlash('alert')){
+                // Получаем его
+                $alert = Yii::$app->session->getFlash('alert');
+                // И показываем пользователю
+                echo Alert::widget([
+                    'options' => [
+                        'class' => 'alert-success',
+                    ],
+                    'body' => $alert,
+                ]);
+            }
+        ?>
         <?= $content ?>
     </div>
 </div>
@@ -76,6 +91,7 @@ AppAsset::register($this);
 
         <p class="pull-right"><?= Yii::powered() ?></p>
     </div>
+    <?= Yii::$app->request->absoluteUrl ?>
 </footer>
 
 <?php $this->endBody() ?>

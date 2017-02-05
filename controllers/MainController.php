@@ -2,13 +2,14 @@
 
 namespace app\controllers;
 
+use app\models\User;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use app\models\AuthForm;
 use app\models\ContactForm;
-use app\models\User;
+use yii\web\NotFoundHttpException;
 
 class MainController extends Controller
 {
@@ -65,83 +66,87 @@ class MainController extends Controller
     }
 
     /**
-     * Login action.
+     * Действие логина.
      *
-     * @return string
+     * @return string результат
      */
     public function actionLogin()
     {
+        // Если пользователь аутентифицирован
         if (!Yii::$app->user->isGuest) {
+            // Отправляем его на главную
             return $this->goHome();
         }
 
+        // Создаём экземпляр модели
         $model = new AuthForm();
+        // Задаём модели сценарий входа
         $model->scenario = AuthForm::SCENARIO_LOGIN;
 
+        // Если вход удался
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
+            // Возвращаем пользователя на предыдущую страницу
             return $this->goBack();
         }
+        // Отображаем форму входа
         return $this->render('login', [
             'model' => $model,
         ]);
     }
 
-    /*
+    /**
+     * Действие регистрации
      *
+     * @return string результат
      * */
     public function actionRegister()
     {
+        // Если пользователь аутентифицирован
         if (!Yii::$app->user->isGuest) {
+            // Отправляем его на главную
             return $this->goHome();
         }
 
+        // Создаём модель формы входа
         $model = new AuthForm();
+        // Устанавливаем сценарием регистрацию пользователя
         $model->scenario = AuthForm::SCENARIO_REGISTER;
 
+        // Если удалось зарегистрироваться
         if($model->load(Yii::$app->request->post()) && $model->register())
         {
+            // Добавляем уведомление
             Yii::$app->session->setFlash('alert', 'Вы успешно зарегистрировались! Для подтверждения регистрации 
                                                         перейдите по ссылке, указанной в email');
+            // Возвращаем пользователя на главную
             return $this->goHome();
         }
-
+        // Отображаем форму регистрации
         return $this->render('register', [
             'model' => $model,
         ]);
     }
 
-    public function actionAuth($type)
+    public function actionConfirmEmail($hash)
     {
-        if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
-        }
-
-        $model = new LoginForm();
-        $model->scenario = ($type == 'login') ? LoginForm::SCENARIO_LOGIN : LoginForm::SCENARIO_REGISTER;
-
-        if($model->load(Yii::$app->request->post()) && $model->auth($model->scenario))
+        if(($user = User::findOne(['hash' => $hash])) !== null)
         {
-            if($model->scenario == 'register') {
-                Yii::$app->session->setFlash('alert', 'Вы успешно зарегистрировались! Для подтверждения регистрации 
-                                                        перейдите по ссылке, указанной в email');
-                $user = User::findOne(['email' => $model->email]);
-                Yii::$app->mailer->compose('register', [
-                        'hash' => $user->hash,
-                    ])
-                    ->setFrom(Yii::$app->params['adminEmail'])
-                    ->setTo($model->email)
-                    ->setSubject('Регистрация в гостевой книге')
-                    ->send();
-            }
+            $user->hash = null;
+            $user->save();
+
+            // Добавляем уведомление
+            Yii::$app->session->setFlash('alert', 'Ваша email подтверждён! Теперь вы можете войти в приложение.' . $user->hash);
+
             return $this->goHome();
         }
-        return $this->render('auth', [
-            'model' => $model,
-        ]);
+        else
+        {
+            throw new NotFoundHttpException('Страница, которую вы запрашиваете, не существует.');
+        }
     }
 
     /**
-     * Logout action.
+     * Действие выхода из приложения.
      *
      * @return string
      */

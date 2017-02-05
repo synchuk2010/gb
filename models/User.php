@@ -84,7 +84,7 @@ class User extends ActiveRecord implements IdentityInterface
     public function getId()
     {
         // Возвращаем идентификатор в таблице пользователей
-        return $this->getId();
+        return $this->id;
     }
 
     /**
