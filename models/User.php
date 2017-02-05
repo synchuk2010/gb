@@ -39,8 +39,9 @@ class User extends ActiveRecord implements IdentityInterface
             if($this->isNewRecord) {
                 // Создаём ключ аутентификации
                 $this->authKey = Yii::$app->security->generateRandomString();
-                return true;
             }
+            // Обязательно делаем return true, иначе пользователь не будет сохраняться
+            return true;
         }
         return false;
     }
@@ -79,6 +80,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     /**
      * Возвращает идентификатор, который может однозначно определить личность пользователя
+     *
      * @return string|integer идентификатор, однозначно определающий личность пользователя.
      */
     public function getId()
@@ -121,9 +123,18 @@ class User extends ActiveRecord implements IdentityInterface
         return $this->getAuthKey() === $authKey;
     }
 
-    public function save($runValidation = false, $attributeNames = null)
+    /**
+     * @inheritdoc
+     * */
+    public function save($runValidation = true, $attributeNames = null)
     {
-        $this->password = Yii::$app->getSecurity()->generatePasswordHash($this->password);
-        parent::save($runValidation, $attributeNames);
+        // Если запись только добавлена
+        if($this->isNewRecord)
+        {
+            // Шифруем пароль
+            $this->password = Yii::$app->getSecurity()->generatePasswordHash($this->password);
+        }
+        // Вызываем родительский метод
+        return parent::save($runValidation, $attributeNames);
     }
 }

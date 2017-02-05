@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\models\User;
 use Yii;
 use yii\filters\AccessControl;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use app\models\AuthForm;
@@ -127,18 +128,31 @@ class MainController extends Controller
         ]);
     }
 
+    /**
+     * Подтверждает email пользователя
+     *
+     * @param $hash string случайная строка символов, идентифицирующая данного пользователя
+     *
+     * @return string результат
+     * @throws NotFoundHttpException 404-е исключение, если пользователь не найден
+     * */
     public function actionConfirmEmail($hash)
     {
+        // Если пользователь найден
         if(($user = User::findOne(['hash' => $hash])) !== null)
         {
-            $user->hash = null;
-            $user->save();
-
             // Добавляем уведомление
-            Yii::$app->session->setFlash('alert', 'Ваша email подтверждён! Теперь вы можете войти в приложение.' . $user->hash);
+            Yii::$app->session->setFlash('alert',
+                'Ваш email подтверждён! Теперь вы можете войти в приложение.' );
 
+            // Устанавливаем hash в null
+            $user->hash = null;
+            // Сохраняем запись
+            $user->save();
+            // Отправляем пользователя на домашнюю страницу
             return $this->goHome();
         }
+        // Иначе - выбрасываем исключение
         else
         {
             throw new NotFoundHttpException('Страница, которую вы запрашиваете, не существует.');
