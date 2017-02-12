@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\captcha\Captcha;
+use dosamigos\ckeditor\CKEditor;
 
 // TODO: Добавить CKEditor (не работает Composer, попробуем прееустановить)
 
@@ -23,7 +24,10 @@ $this->params['breadcrumbs'][] = $this->title;
     }
     ?>
 
-    <?= $form->field($model, 'message')->textarea(['rows' => 6]) ?>
+    <?= $form->field($model, 'message')->widget(CKEditor::className(),[
+        'options' => ['rows' => 6],
+        'preset' => 'basic',
+    ]) ?>
 
     <?php if(Yii::$app->user->isGuest) {
         echo $form->field($model, 'verifyCode')->label('Код подтверждения')->widget(Captcha::className(), [
