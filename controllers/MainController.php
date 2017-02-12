@@ -2,10 +2,10 @@
 
 namespace app\controllers;
 
+use app\models\Entry;
 use app\models\User;
 use Yii;
 use yii\filters\AccessControl;
-use yii\helpers\Url;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use app\models\AuthForm;
@@ -162,13 +162,48 @@ class MainController extends Controller
     /**
      * Действие выхода из приложения.
      *
-     * @return string
+     * @return string результат
      */
     public function actionLogout()
     {
         Yii::$app->user->logout();
 
         return $this->goHome();
+    }
+
+    /**
+     * Действие добавления новой статьи
+     *
+     * @return string результат
+     * */
+    public function actionAddEntry()
+    {
+        // Заводим новый экземпляр модели
+        $model = new Entry();
+        // По-умолчанию сценарием будет создание анонимной записи
+        $model->scenario = Entry::SCENARIO_ANONYMOUS;
+        // Если пользователь аутентифицирован
+        if(!Yii::$app->user->isGuest)
+        {
+            $user = $this->findUser();
+            // Меняем сценарий
+            $model->scenario = Entry::SCENARIO_REGISTERED;
+            $model->user = $user->id;
+            $model->email = $user->email;
+            $model->name = $user->name;
+        }
+        // Если модель загружена через post и сохранена
+        if($model->load(Yii::$app->request->post()) && $model->save())
+        {
+            // Устанавливаем уведомление
+            Yii::$app->session->setFlash('alert', 'Ваша запись успешно добавлена!');
+            // И возвращаем пользователя на главную
+            return $this->goHome();
+        }
+        // Возвращаем форму с новой записью
+        return $this->render('add-entry', [
+            'model' => $model,
+        ]);
     }
 
     /**
@@ -197,5 +232,24 @@ class MainController extends Controller
     public function actionAbout()
     {
         return $this->render('about');
+    }
+
+    /**
+     * Находит запись в БД, соответствующий текущему пользователю системы
+     *
+     * @return User найденный пользователь
+     *
+     * @throws NotFoundHttpException исключение, если пользователь не найден
+     * */
+    private function findUser()
+    {
+        if(($user = User::findOne(Yii::$app->user->id)) !== null)
+        {
+            return $user;
+        }
+        else
+        {
+            throw new NotFoundHttpException('Страница, которую вы запрашиваете, не существует.');
+        }
     }
 }

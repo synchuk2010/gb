@@ -3,6 +3,10 @@ body {
     height: 100%;
 }
 
+textarea {
+    resize: none;
+}
+
 .wrap {
     min-height: 100%;
     height: auto;
