@@ -11,6 +11,7 @@ use app\assets\AppAsset;
 use yii\bootstrap\Alert;
 
 AppAsset::register($this);
+$this->theme = 'cosmo';
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -37,7 +38,7 @@ AppAsset::register($this);
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
-            ['label' => 'Добавить статью', 'url' => ['/main/add-entry']],
+            ['label' => 'Добавить запись', 'url' => ['/main/add-entry']],
             Yii::$app->user->isGuest ? (
                 [
                     'label' => 'Войти/Зарегистрироваться',
@@ -46,16 +47,20 @@ AppAsset::register($this);
                         ['label' => 'Зарегистрироваться', 'url' => '/main/register']
                     ]
                 ]
-            ) : (
-                '<li>'
-                . Html::beginForm(['/main/logout'], 'post')
-                . Html::submitButton(
-                    'Logout (' . Yii::$app->user->identity->name . ')',
-                    ['class' => 'btn btn-link logout']
-                )
-                . Html::endForm()
-                . '</li>'
-            )
+            ) : ([
+                'label' => Yii::$app->user->identity->name,
+                'items' => [
+                    ['label' => 'Настройки', 'url' => '/main/settings'],
+                    ['label' => 'Мои записи', 'url' => '/main/my-entries'],
+                    '<li class="divider"></li>',
+                    '<li>' . Html::a('Выйти', '/main/logout',
+                        [
+                            'title' => 'Выйти',
+                            'data' => ['method' => 'post']
+                        ])
+                    .'</li>',
+                ]
+            ])
         ],
     ]);
     NavBar::end();
@@ -85,7 +90,7 @@ AppAsset::register($this);
 
 <footer class="footer">
     <div class="container">
-        <p class="pull-left">&copy; My Company <?= date('Y') ?></p>
+        <p class="pull-left">&copy; Никита Фисун <?= date('Y') ?></p>
 
         <p class="pull-right"><?= Yii::powered() ?></p>
     </div>

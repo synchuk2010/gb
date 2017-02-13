@@ -2,7 +2,6 @@
 
 namespace app\models;
 
-use Yii;
 use yii\db\ActiveRecord;
 use yii\helpers\HtmlPurifier;
 
@@ -121,6 +120,7 @@ class Entry extends ActiveRecord
     {
         // Перед сохранением - очищаем входной html от вредоносных тегов
         $this->message = HtmlPurifier::process($this->message);
+        // Вызываем родительский метод сохранения
         return parent::save($runValidation, $attributeNames);
     }
 }

@@ -5,8 +5,6 @@ use yii\widgets\ActiveForm;
 use yii\captcha\Captcha;
 use dosamigos\ckeditor\CKEditor;
 
-// TODO: Добавить CKEditor (не работает Composer, попробуем прееустановить)
-
 /* @var $this yii\web\View объект текущего представления */
 /* @var $model app\models\Entry объект создаваемой записи */
 

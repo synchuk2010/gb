@@ -177,17 +177,18 @@ class AuthForm extends Model
             $user->name = $this->email;
             // Случайная строка для подтверждения email
             $user->hash = Yii::$app->security->generateRandomString(32);
-            // Сохраняем пользовтеля
-            $user->save();
 
-            // Возвращаем результат отправки письма
-            return Yii::$app->mailer->compose('register', [
+            // Отправляем письмо с подтверждением регистрации
+            Yii::$app->mailer->compose('register', [
                     'hash' => $user->hash,
                 ])
                 ->setFrom(Yii::$app->params['adminEmail'])
                 ->setTo($user->email)
                 ->setSubject('Регистрация в гостевой книге')
                 ->send();
+
+            // Сохраняем пользовтеля и возвращаем результат
+            return $user->save();
         }
         return false;
     }
@@ -197,7 +198,7 @@ class AuthForm extends Model
      *
      * @return User|null если пользователь не найден, вернётся false
      */
-    public function getUser()
+    private function getUser()
     {
         // Если пользователь не установлен
         if ($this->_user === false) {

@@ -3,36 +3,77 @@
 namespace app\controllers;
 
 use app\models\Entry;
+use app\models\Settings;
 use app\models\User;
 use Yii;
+use yii\data\Pagination;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use app\models\AuthForm;
-use app\models\ContactForm;
 use yii\web\NotFoundHttpException;
-
+/**
+ * Основной контроллер приложения
+ * */
 class MainController extends Controller
 {
+    /**
+     * @var $rows integer количество записей, отображаемых на странице
+     * */
+    private $rows = 10;
+
+    /**
+     * @inheritdoc
+     * */
+    public function init()
+    {
+        // Если пользователь аутентифицирован
+        if(!Yii::$app->user->isGuest)
+        {
+            // Получаем его запись из БД
+            $user = $this->findUser();
+
+            // Устанавливаем ему тему bootstrap, которую он выбрал
+            Yii::$app->assetManager->bundles = [
+                'yii\bootstrap\BootstrapAsset' => [
+                    // Задаём источник файлов bootstrap (важно скопировать весь дистрибутив, иначе могут полететь glyphicons)
+                    'sourcePath' => '@app/themes/' . $user->theme,
+                    // Указываем путь к нашему css
+                    'css' => [$user->theme . '.css'],
+                ],
+            ];
+        }
+        // Вызываем родительский метод
+        parent::init();
+    }
+
     /**
      * @inheritdoc
      */
     public function behaviors()
     {
+        // Правила доступа
         return [
+            // Фильтры доступа
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout'],
+                /*
+                 * Действия выхода и действий пользователя
+                 * доступны только тем, кто аутентифицирован
+                 * */
+                'only' => ['logout', 'my-entries', 'settings'],
                 'rules' => [
                     [
-                        'actions' => ['logout'],
+                        'actions' => ['logout', 'my-entries', 'settings'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
                 ],
             ],
+            // Фильтр по типам запроса
             'verbs' => [
                 'class' => VerbFilter::className(),
+                // Выход осуществляется только через post
                 'actions' => [
                     'logout' => ['post'],
                 ],
@@ -57,17 +98,44 @@ class MainController extends Controller
     }
 
     /**
-     * Displays homepage.
+     * Главная страница
      *
-     * @return string
+     * @return string результат
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        // Если пользователь аутентифицирован
+        if(!Yii::$app->user->isGuest)
+        {
+            // Находим его и получаем число отображаемых записей
+            $user = $this->findUser();
+            $this->rows = $user->rows;
+        }
+
+        // Находим записи в БД
+        $entries = Entry::find();
+
+        // Добавляем пагинацию
+        $pagination = new Pagination([
+            'defaultPageSize' => $this->rows,
+            'totalCount' => $entries->count(),
+        ]);
+
+        // Делаем запрос
+        $model = $entries->orderBy('created DESC')
+            ->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+
+        // Отображаем главную
+        return $this->render('index', [
+            'model' => $model,
+            'pagination' => $pagination,
+        ]);
     }
 
     /**
-     * Действие логина.
+     * Аутентификация пользователя.
      *
      * @return string результат
      */
@@ -96,7 +164,7 @@ class MainController extends Controller
     }
 
     /**
-     * Действие регистрации
+     * Регистрация пользователя
      *
      * @return string результат
      * */
@@ -129,7 +197,7 @@ class MainController extends Controller
     }
 
     /**
-     * Подтверждает email пользователя
+     * Подтверждение email пользователя
      *
      * @param $hash string случайная строка символов, идентифицирующая данного пользователя
      *
@@ -160,7 +228,7 @@ class MainController extends Controller
     }
 
     /**
-     * Действие выхода из приложения.
+     * Выход их приложения
      *
      * @return string результат
      */
@@ -172,7 +240,7 @@ class MainController extends Controller
     }
 
     /**
-     * Действие добавления новой статьи
+     * Добавление новой статьи
      *
      * @return string результат
      * */
@@ -207,31 +275,62 @@ class MainController extends Controller
     }
 
     /**
-     * Displays contact page.
+     * Записи текущего пользователя
      *
-     * @return string
-     */
-    public function actionContact()
+     * @return string результат
+     * */
+    public function actionMyEntries()
     {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
-
-            return $this->refresh();
+        // Если пользователь аутентифицирован
+        if(!Yii::$app->user->isGuest)
+        {
+            // Находим его и получаем число отображаемых записей
+            $user = $this->findUser();
+            $this->rows = $user->rows;
         }
-        return $this->render('contact', [
+
+        // Находим записи текущего пользователя
+        $entries = Entry::find()->where(['user' => Yii::$app->user->id]);
+
+        // Создаём пагинацию
+        $pagination = new Pagination([
+            'defaultPageSize' => 10,
+            'totalCount' => $entries->count(),
+        ]);
+
+        // Делаем запрос
+        $model = $entries->orderBy('created DESC')
+            ->offset($pagination->offset)
+            ->limit($pagination->limit)
+            ->all();
+
+        // Отображаем записи
+        return $this->render('my-entries', [
             'model' => $model,
+            'pagination' => $pagination,
         ]);
     }
 
     /**
-     * Displays about page.
-     *
-     * @return string
-     */
-    public function actionAbout()
+     * Настройки пользователя
+     * */
+    public function actionSettings()
     {
-        return $this->render('about');
+        // Заводим объект настроек
+        $model = new Settings();
+
+        // Если удалось загрузить данные из запроса и сохранить их
+        if($model->load(Yii::$app->request->post()) && $model->save())
+        {
+            // Добавляем уведомление
+            Yii::$app->session->setFlash('alert', 'Ваши настройки успешно сохранены');
+            // Перенаправляем на главную страницу
+            return $this->goHome();
+        }
+        // Отображаем страницу с настройками
+        return $this->render('settings', [
+            'model' => $model
+        ]);
     }
 
     /**
@@ -243,10 +342,13 @@ class MainController extends Controller
      * */
     private function findUser()
     {
+        // Если пользователь найден
         if(($user = User::findOne(Yii::$app->user->id)) !== null)
         {
+            // Возвращаем его
             return $user;
         }
+        // Иначе - выбрасываем исключение
         else
         {
             throw new NotFoundHttpException('Страница, которую вы запрашиваете, не существует.');
