@@ -7,6 +7,7 @@ use dosamigos\ckeditor\CKEditor;
 
 /* @var $this yii\web\View объект текущего представления */
 /* @var $model app\models\Entry объект создаваемой записи */
+/* @var $form yii\widgets\ActiveForm форма добавления записи */
 
 $this->title = 'Добавить запись';
 $this->params['breadcrumbs'][] = $this->title;

@@ -7,6 +7,11 @@ textarea {
     resize: none;
 }
 
+img {
+    width: 100%;
+    height: auto;
+}
+
 .wrap {
     min-height: 100%;
     height: auto;

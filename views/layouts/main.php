@@ -50,8 +50,8 @@ $this->theme = 'cosmo';
             ) : ([
                 'label' => Yii::$app->user->identity->name,
                 'items' => [
-                    ['label' => 'Настройки', 'url' => '/main/settings'],
                     ['label' => 'Мои записи', 'url' => '/main/my-entries'],
+                    ['label' => 'Настройки', 'url' => '/main/settings'],
                     '<li class="divider"></li>',
                     '<li>' . Html::a('Выйти', '/main/logout',
                         [

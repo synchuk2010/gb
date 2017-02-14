@@ -61,10 +61,10 @@ class MainController extends Controller
                  * Действия выхода и действий пользователя
                  * доступны только тем, кто аутентифицирован
                  * */
-                'only' => ['logout', 'my-entries', 'settings'],
+                'only' => ['logout', 'my-entries', 'settings', 'edit-entry', 'delete-entry'],
                 'rules' => [
                     [
-                        'actions' => ['logout', 'my-entries', 'settings'],
+                        'actions' => ['logout', 'my-entries', 'settings', 'edit-entry', 'delete-entry'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -76,6 +76,7 @@ class MainController extends Controller
                 // Выход осуществляется только через post
                 'actions' => [
                     'logout' => ['post'],
+                    'delete-entry' => ['post'],
                 ],
             ],
         ];
@@ -200,7 +201,6 @@ class MainController extends Controller
      * Подтверждение email пользователя
      *
      * @param $hash string случайная строка символов, идентифицирующая данного пользователя
-     *
      * @return string результат
      * @throws NotFoundHttpException 404-е исключение, если пользователь не найден
      * */
@@ -312,6 +312,49 @@ class MainController extends Controller
     }
 
     /**
+     * Редактирование записи пользователя
+     *
+     * @param $id integer номер записи
+     * @return string результат
+     * */
+    public function actionEditEntry($id)
+    {
+        // Получаем запись
+        $model = $this->findEntry($id);
+        // Задаём сценарий
+        $model->scenario = Entry::SCENARIO_REGISTERED;
+        // Если модель загружена через post и её сохранили
+        if($model->load(Yii::$app->request->post()) && $model->save())
+        {
+            // Выдаём уведомление
+            Yii::$app->session->setFlash('alert', 'Запись успешно отредактирована!');
+            // И перенаправляем пользователя на страницу его записей
+            return $this->redirect('my-entries');
+        }
+        // Возвращаем форму редактирования записи
+        return $this->render('edit-entry', [
+            'model' => $model
+        ]);
+    }
+
+    /**
+     * Удаление записи пользователя
+     *
+     * @param $id integer номер записи в БД
+     * @return string результат
+     * */
+    public function actionDeleteEntry($id)
+    {
+        // Удаляем запись
+        $this->findEntry($id)->delete();
+        // Устанавливаем уведомление
+        Yii::$app->session->setFlash('alert', 'Запись успешно удалена!');
+        // Перенаправляем пользователя
+        return $this->redirect('my-entries');
+    }
+
+
+    /**
      * Настройки пользователя
      * */
     public function actionSettings()
@@ -354,4 +397,25 @@ class MainController extends Controller
             throw new NotFoundHttpException('Страница, которую вы запрашиваете, не существует.');
         }
     }
+
+    /**
+     * Находит запись по её первичному ключу
+     *
+     * @param $id integer номер записи
+     * @return Entry объект записи, соответствующий данному номеру
+     * @throws NotFoundHttpException 404-е исключение, если запись не найдена
+     * */
+    private function findEntry($id)
+    {
+        if(($entry = Entry::findOne($id)) !== null)
+        {
+            return $entry;
+        }
+        else
+        {
+            throw new NotFoundHttpException('Страница, которую вы запрашиваете, не существует.');
+        }
+    }
+
+
 }
