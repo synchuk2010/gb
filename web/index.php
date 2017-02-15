@@ -4,8 +4,8 @@
  * */
 
 // Если вы хотите перевести приложение в режим разработки, строки ниже должны быть раскомментированы
-defined('YII_DEBUG') or define('YII_DEBUG', true);
-defined('YII_ENV') or define('YII_ENV', 'dev');
+// defined('YII_DEBUG') or define('YII_DEBUG', true);
+// defined('YII_ENV') or define('YII_ENV', 'dev');
 
 // Подключаем автозагрузчик классов
 require(__DIR__ . '/../vendor/autoload.php');
