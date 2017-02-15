@@ -1,17 +1,28 @@
 <?php
+/*
+ * Файл конфигурации консольного приложения
+ * */
 
+// Дополнительная конфигурация
 $params = require(__DIR__ . '/params.php');
+// Конфигурация БД
 $db = require(__DIR__ . '/db.php');
 
+// Основная конфигурация приложения
 $config = [
-    'id' => 'basic-console',
+    // Идентификатор приложения
+    'id' => 'gb-console',
+    // Базовый путь
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
+    // Пространство имён для контроллеров консольного приложения
     'controllerNamespace' => 'app\commands',
+    // Настройка компонентов
     'components' => [
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
+        // Логирование
         'log' => [
             'targets' => [
                 [
@@ -20,8 +31,10 @@ $config = [
                 ],
             ],
         ],
+        // БД
         'db' => $db,
     ],
+    // Дополнительные параметры
     'params' => $params,
     /*
     'controllerMap' => [
@@ -32,12 +45,14 @@ $config = [
     */
 ];
 
+// Конфигурация для разработки приложения
 if (YII_ENV_DEV) {
-    // configuration adjustments for 'dev' environment
+    // Подключаем Gii
     $config['bootstrap'][] = 'gii';
     $config['modules']['gii'] = [
         'class' => 'yii\gii\Module',
     ];
 }
 
+// Возвращаем конфигурацию приложения
 return $config;

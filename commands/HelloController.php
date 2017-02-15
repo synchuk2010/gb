@@ -10,9 +10,16 @@ namespace app\commands;
 use yii\console\Controller;
 
 /**
- * This command echoes the first argument that you have entered.
+ * Команда выводит первый введённый вами аргумент.
  *
- * This command is provided as an example for you to learn how to create console commands.
+ * Данная команда приводит пример работы консольного приложения.
+ * С помощью консольных приложений можно проводить обслуживание приложения.
+ * Создавайте собственные действия контроллера и вызывайте их через
+ * yii имя_контроллера/имя_действия в консоли вашей ОС, предварительно перейдя
+ * в директорию с приложением. Консольные приложения подключены к той же БД
+ * (если вы не переопределили это в файле настроек console.php) и очень удобны для
+ * выполнения рядовых операций с приложениями (добавление пользователей, выгрузка логов,
+ * настройка приложения), что позволяет создавать задания по расписанию в планировщиках.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
@@ -20,8 +27,8 @@ use yii\console\Controller;
 class HelloController extends Controller
 {
     /**
-     * This command echoes what you have entered as the message.
-     * @param string $message the message to be echoed.
+     * Выводит введённое вами сообщение (либо hello world, если вы ничего не указали)
+     * @param string $message сообщение, которое будет отображено.
      */
     public function actionIndex($message = 'hello world')
     {

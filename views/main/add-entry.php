@@ -1,4 +1,7 @@
 <?php
+/*
+ * Отображает форму добавления записи
+ * */
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
@@ -32,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
         echo $form->field($model, 'verifyCode')->label('Код подтверждения')->widget(Captcha::className(), [
             // Чтобы предотвратить спам, добавляем капчу
             'captchaAction' => 'main/captcha',
-            'template' => '<div class="row"><div class="col-lg-4">{image}</div><div class="col-lg-3">{input}</div></div>',
+            'template' => '<div class="row"><div class="col-lg-2">{image}</div><div class="col-lg-3">{input}</div></div>',
             'class' => 'form-control input-sm'
         ]);
     }

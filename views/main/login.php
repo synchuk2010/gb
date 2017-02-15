@@ -1,4 +1,7 @@
 <?php
+/*
+ * Отображает форму входа пользователя
+ * */
 
 /* @var $this yii\web\View */
 /* @var $form yii\bootstrap\ActiveForm */

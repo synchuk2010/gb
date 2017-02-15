@@ -1,14 +1,20 @@
 <?php
+// Дополнительная конфигурация
 $params = require(__DIR__ . '/params.php');
+// Конфигурация БД для выполнения тестов
 $dbParams = require(__DIR__ . '/test_db.php');
 
 /**
- * Application configuration shared by all test types
+ * Конфигурация приложения для разработки тестов (используется всеми тестовыми типами)
  */
 return [
-    'id' => 'basic-tests',
-    'basePath' => dirname(__DIR__),    
-    'language' => 'en-US',
+    // Идентификатор приложения
+    'id' => 'gb-tests',
+    // Базовый путь
+    'basePath' => dirname(__DIR__),
+    // Язык
+    'language' => 'ru-RU',
+    // Настройка компонентов
     'components' => [
         'db' => $dbParams,
         'mailer' => [
@@ -19,17 +25,18 @@ return [
         ],
         'user' => [
             'identityClass' => 'app\models\User',
-        ],        
+        ],
         'request' => [
             'cookieValidationKey' => 'test',
             'enableCsrfValidation' => false,
-            // but if you absolutely need it set cookie domain to localhost
+            // Если вам необходимо однозначно указать домен как localhost, раскомментируйте
             /*
             'csrfCookie' => [
                 'domain' => 'localhost',
             ],
             */
-        ],        
+        ],
     ],
+    // Дополнительные параметры
     'params' => $params,
 ];

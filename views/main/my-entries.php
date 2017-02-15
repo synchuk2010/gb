@@ -1,4 +1,7 @@
 <?php
+/*
+ * Отображает записи конкретного пользователя
+ * */
 
 use yii\helpers\Html;
 use yii\widgets\LinkPager;

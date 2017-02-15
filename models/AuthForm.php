@@ -53,8 +53,12 @@ class AuthForm extends Model
         ];
     }
 
+    /**
+     * @inheritdoc
+     * */
     public function attributeLabels()
     {
+        // Метки атрибутов
         return [
             'password' => 'Пароль',
             'rememberMe' => 'Запомнить меня',

@@ -1,4 +1,7 @@
 <?php
+/*
+ * Отображает главную страницу гостевой книги
+ * */
 
 use yii\helpers\Html;
 use yii\helpers\HtmlPurifier;

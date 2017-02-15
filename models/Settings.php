@@ -83,12 +83,13 @@ class Settings extends Model
         // Если валидация модели проходит успешно
         if($this->validate())
         {
+            // Находим пользователя
             $user = User::findOne(Yii::$app->user->id);
-
+            // Задаём его настройки
             $user->rows = $this->rows;
             $user->theme = $this->theme;
             $user->name = $this->name;
-
+            // Возвращаем результат сохранения
             return $user->save();
         }
         return false;

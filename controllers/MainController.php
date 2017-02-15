@@ -356,6 +356,8 @@ class MainController extends Controller
 
     /**
      * Настройки пользователя
+     *
+     * @return string результат
      * */
     public function actionSettings()
     {
@@ -407,15 +409,15 @@ class MainController extends Controller
      * */
     private function findEntry($id)
     {
+        // Если запись найдена - возвращаем её
         if(($entry = Entry::findOne($id)) !== null)
         {
             return $entry;
         }
+        // Иначе - выбрасываем исключение
         else
         {
             throw new NotFoundHttpException('Страница, которую вы запрашиваете, не существует.');
         }
     }
-
-
 }

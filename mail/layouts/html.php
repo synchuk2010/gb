@@ -1,9 +1,13 @@
 <?php
+/*
+ * Шаблон для письма в формате html
+ * */
+
 use yii\helpers\Html;
 
-/* @var $this \yii\web\View view component instance */
-/* @var $message \yii\mail\MessageInterface the message being composed */
-/* @var $content string main view render result */
+/* @var $this \yii\web\View объект текущего представления */
+/* @var $message \yii\mail\MessageInterface объект сообщения */
+/* @var $content string результат отображения вида */
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">

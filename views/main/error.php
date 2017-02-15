@@ -1,15 +1,18 @@
 <?php
+/*
+ * Отображает страницу ошибки
+ * */
 
-/* @var $this yii\web\View */
-/* @var $name string */
-/* @var $message string */
-/* @var $exception Exception */
+/* @var $this yii\web\View объект текущего представления*/
+/* @var $name string название исключения */
+/* @var $message string сообщение с ошибкой */
+/* @var $exception Exception объект исключения */
 
 use yii\helpers\Html;
 
 $this->title = $name;
 ?>
-<div class="site-error">
+<div class="main-error">
 
     <h1><?= Html::encode($this->title) ?></h1>
 

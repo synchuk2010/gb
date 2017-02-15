@@ -1,10 +1,17 @@
 <?php
+/*
+ * Файл конфигурации вашего веб-приложения на Yii
+ * */
 
+// Добавляем дополнительную конфигурацию
 $params = require(__DIR__ . '/params.php');
 
+// Основная конфигурация приложения
 $config = [
+    // Идентификатор приложения
     'id' => 'gb',
     'name' => 'Гостевая книга',
+    // Базовый путь
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     /*
@@ -26,22 +33,29 @@ $config = [
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
+        // Класс, представляющий пользователя
         'user' => [
             'identityClass' => 'app\models\User',
             'enableAutoLogin' => true,
             'loginUrl' => ['main/login'],
         ],
+        // Обработчик ошибок
         'errorHandler' => [
             'errorAction' => 'main/error',
         ],
         'mailer' => [
             'class' => 'yii\swiftmailer\Mailer',
-            // send all mails to a file by default. You have to set
-            // 'useFileTransport' to false and configure a transport
-            // for the mailer to send real emails.
-            'useFileTransport' => true,
+            /*
+             * Класс отправки почты. Настроен таким образом,
+             * чтобы письма писались в файлы, если приложение в режиме разработки.
+             * Если вы хотите изменить это поведение, установите useFileTransport в true,
+             * чтобы письма всегда писались в файлы (и, соответственно, false, если наоборот).
+             * */
+            'useFileTransport' => YII_DEBUG ? true : false,
+            // Шаблон для html-сообщений (находится в папке mail)
             'htmlLayout' => 'layouts/html',
         ],
+        // Логирование
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
@@ -51,38 +65,33 @@ $config = [
                 ],
             ],
         ],
+        // Конфигурация БД
         'db' => require(__DIR__ . '/db.php'),
         /*
          * Настройка urlManager для отображения ЧПУ.
-         * Если вы хотите чтобы приложение отображалось по вызову articles,
-         * а не articles/web, вам нужно настроить виртуальные хосты на вашем веб-сервере
+         * Если вы хотите чтобы приложение отображалось по вызову gb,
+         * а не gb/web, вам нужно настроить виртуальные хосты на вашем веб-сервере
          * */
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
         ],
-        /*
-         * Настройка форматирования. Задаём формат передаваемой даты, чтобы работали
-         * фильтры даты GridView в панели администрирования.
-         * */
-        'formatter' => [
-            'dateFormat' => 'yyyy-MM-dd',
-        ],
     ],
     'params' => $params,
 ];
 
+// Конфигурация для разработки приложения
 if (YII_ENV_DEV) {
-    // configuration adjustments for 'dev' environment
+    // Подключаем модуль отладки
     $config['bootstrap'][] = 'debug';
     $config['modules']['debug'] = [
         'class' => 'yii\debug\Module',
     ];
-
+    // Подключаем Gii
     $config['bootstrap'][] = 'gii';
     $config['modules']['gii'] = [
         'class' => 'yii\gii\Module',
     ];
 }
-
+// Устанавливаем конфигурацию приложения
 return $config;

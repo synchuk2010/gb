@@ -1,192 +1,139 @@
-Yii 2 Basic Project Template
-============================
+#Гостевая книга
 
-Yii 2 Basic Project Template is a skeleton [Yii 2](http://www.yiiframework.com/) application best for
-rapidly creating small projects.
+### Аннотация
 
-The template contains the basic features including user login/logout and a contact page.
-It includes all commonly used configurations that would allow you to focus on adding new
-features to your application.
+Гостевая книга - простое учебное приложение, реализующее простейшую гостевую
+книгу, которые были довольно популярны до появления форумов и социальных 
+сетей. Приложение написано на Yii2 и использует один контроллер, реализующий 
+пользовательский функционал. Данное приложение достаточно простое и вполне 
+может подойти начинающим разработчикам на Yii2, так как оно состоит, в основном, 
+из стандартных компонентов и содержит в себе комментарии к коду. Если вы 
+задаётесь целью изучить Yii Framework 2, загрузите данное приложение, 
+установите его (инструкция ниже), вооружитесь [официальной документацией на 
+русском языке](https://github.com/yiisoft/yii2/tree/master/docs/guide-ru) и 
+[документацией по API на английском языке](http://www.yiiframework.com/doc-2.0/index.html) 
+и смело начинайте изучать этот замечательный фреймворк. В приложении вы найдёте 
+комментарии к контроллерам и моделям (в phpDoc), к конфигурационным файлам и 
+другим частям, используемым в приложении.
 
-[![Latest Stable Version](https://poser.pugx.org/yiisoft/yii2-app-basic/v/stable.png)](https://packagist.org/packages/yiisoft/yii2-app-basic)
-[![Total Downloads](https://poser.pugx.org/yiisoft/yii2-app-basic/downloads.png)](https://packagist.org/packages/yiisoft/yii2-app-basic)
-[![Build Status](https://travis-ci.org/yiisoft/yii2-app-basic.svg?branch=master)](https://travis-ci.org/yiisoft/yii2-app-basic)
+### Описание приложения
 
-DIRECTORY STRUCTURE
--------------------
+Сборник статей состоит из одного контроллера, который реализует все функции 
+пользовательской части. Условно функции приложения делятся на две группы. 
+Первая - доступные всем пользователям. Вторая - только зарегистрированным. 
+Все пользователи могут делать следующее:
 
-      assets/             contains assets definition
-      commands/           contains console commands (controllers)
-      config/             contains application configurations
-      controllers/        contains Web controller classes
-      mail/               contains view files for e-mails
-      models/             contains model classes
-      runtime/            contains files generated during runtime
-      tests/              contains various tests for the basic application
-      vendor/             contains dependent 3rd-party packages
-      views/              contains view files for the Web application
-      web/                contains the entry script and Web resources
+* Добавлять записи в формате html (в том числе прикреплять к ним изображения);
+* Просматривать список уже добавленных записей (с постраничной разбивкой).
 
+Зарегистрированные пользователи имеют доступ к дополнительным функциям:
 
+* Изменение темы оформления гостевой книги (на выбор - 17 стандартных тем Bootstrap);
+* Выбирать количество отображаемых записей на странице;
+* Изменять отображаемое имя в своих записях;
+* Работать со своими записями (просматривать/редактировать/удалять);
+* Добавлять записи простым заполнением текста записи, без необходимости вводить 
+имя, email и код подтверждения.
 
-REQUIREMENTS
-------------
+Для доступа пользователей используется система регистрации. При регистрации 
+приложение проверяет, существует ли указанный email в базе (если да - выдаёт 
+ошибку). После регистрации, человеку на указанный email приходит письмо со 
+ссылкой подтверждения, после перехода по ней, можно осуществить вход. При 
+входе в приложение, оно проверяет есть ли такой пользователь в базе, подтвердил 
+ли свой пароль и только потом проверяет логин и пароль.
 
-The minimum requirement by this project template that your Web server supports PHP 5.4.0.
+> **Внимание!** Приложение настроено таким образом, что письма отправляются 
+только если выключен режим отладки (константа *YII_DEBUG* равна `false`). Вы можете 
+найти инструкции по установке константы в `web/index.php`. Если константа равна `true`, 
+письма сохраняются в файлы в папке `runtime\mail`. Чтобы открыть их, используйте любой 
+почтовый клиент (например Microsoft Outlook). Кроме того, конастанта всегда равна 
+`false` в ветке **master**, и всегда равна `true` в ветке **testing**.
 
+### Замечания по установке
 
-INSTALLATION
-------------
+Версия Yii Framework - 2.0.11.
 
-### Install via Composer
+Приложение было успешно протестировано на следующих конфигурациях:
 
-If you do not have [Composer](http://getcomposer.org/), you may install it by following the instructions
-at [getcomposer.org](http://getcomposer.org/doc/00-intro.md#installation-nix).
+* Debian 8.7.1 + Apache 2.4.10 + PHP 5.6.30 + MariaDB 10.0.29
 
-You can then install this project template using the following command:
+Замечание по поводу MySQL. Данное приложение написано по той же схеме, что и мой  
+[Сборник статей](https://github.com/Nikita-C47/articles). Дело в том, что сборник 
+статей я разрабатывал под Ubuntu, а гостевую книгу писал уже под Debian. В связи с 
+этим выявилась проблема - при попытке установить приложение с MySQL Server 
+(в Debian его версия - 5.5.54), применение миграции вызвало исключение, так как MySQL 
+в версии 5.5 не знает что такое `CURRENT_TIMESTAMP`. Поэтому при установке приложения, 
+обязательно смотрите на версию своего сервера БД. Вы можете использовать MariaDB вместо 
+MySQL (на указанных выше версиях, приложение работало без проблем), либо использовать 
+MySQL версии 5.7 (потому что сборник статей тестировался на нём, там тоже есть 
+`CUURENT_TIMESTAMP`, но никаких ошибок не возникало).
 
-~~~
-php composer.phar global require "fxp/composer-asset-plugin:^1.2.0"
-php composer.phar create-project --prefer-dist --stability=dev yiisoft/yii2-app-basic basic
-~~~
+Данное приложение реализовано на Yii Framework 2. Это - полноценный каркас для 
+работы веб-приложений, поэтому у него существуют определённые системные требования. 
+Если вы хотите проверить, соответствует ли Ваша конфигурация требуемой для Yii2, 
+вам нужно запустить скрипт проверки requirements.php, находящийся в корневой папке 
+этого приложения. Запустите консоль, перейдите в папку с данным скриптом и выполните 
+`php requirements.php`. Вывод скрипта покажет вам каким требования удовлетворяет ваша 
+конфигурация (_OK_), на какие стоит обратить внимание (_WARNING_) и каким не 
+удовлетворет (_ERROR_). Перед запуском приложения, рекомендуется исправить все ошибки 
+(а желательно и все _WARNING_). Не обязательно все расширения php необходимы для работы 
+приложения, но если Вы в дальнейшем хотите дорабатывать его, было бы неплохо 
+установить все зависимости и получить везде _OK_. Если какого-то из расширений будет 
+не хватать, Yii обязательно на это ругнётся при запуске проекта, так что не переживайте. 
+Кроме того очень рекомендуется установить расширение php-intl для работы 
+интернационализации приложения. Иначе у Вас некорректно будут отображаться форматы 
+русских дат. Если Вы разрабатываете под Linux, то никаких проблем с установкой 
+расширений для php быть не должно (они легко ставятся через пакетные менеджеры apt 
+и yum). Если же Вы разрабатываете под Windows, советую обратить внимание на 
+различные сборки для веб-разработки. Я в течении многих лет использую 
+[xampp](https://www.apachefriends.org/ru/index.html). В нём установлено множество 
+расширений, необходимых для Yii2 (некоторые, правда, выключены, но это легко 
+решается редактированием `php.ini`).
 
-Now you should be able to access the application through the following URL, assuming `basic` is the directory
-directly under the Web root.
+> **Обратите внимание!** Запускать проверку через `requirements.php` нужно **ПОСЛЕ** установки Yii Framework.
 
-~~~
-http://localhost/basic/web/
-~~~
-
-
-### Install from an Archive File
-
-Extract the archive file downloaded from [yiiframework.com](http://www.yiiframework.com/download/) to
-a directory named `basic` that is directly under the Web root.
-
-Set cookie validation key in `config/web.php` file to some random secret string:
-
-```php
-'request' => [
-    // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
-    'cookieValidationKey' => '<secret random string goes here>',
-],
-```
-
-You can then access the application through the following URL:
-
-~~~
-http://localhost/basic/web/
-~~~
-
-
-CONFIGURATION
--------------
-
-### Database
-
-Edit the file `config/db.php` with real data, for example:
-
-```php
-return [
-    'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=localhost;dbname=yii2basic',
-    'username' => 'root',
-    'password' => '1234',
-    'charset' => 'utf8',
-];
-```
-
-**NOTES:**
-- Yii won't create the database for you, this has to be done manually before you can access it.
-- Check and edit the other files in the `config/` directory to customize your application as required.
-- Refer to the README in the `tests` directory for information specific to basic application tests.
-
-
-
-TESTING
--------
-
-Tests are located in `tests` directory. They are developed with [Codeception PHP Testing Framework](http://codeception.com/).
-By default there are 3 test suites:
-
-- `unit`
-- `functional`
-- `acceptance`
-
-Tests can be executed by running
-
-```
-composer exec codecept run
-``` 
-
-The command above will execute unit and functional tests. Unit tests are testing the system components, while functional
-tests are for testing user interaction. Acceptance tests are disabled by default as they require additional setup since
-they perform testing in real browser. 
-
-
-### Running  acceptance tests
-
-To execute acceptance tests do the following:  
-
-1. Rename `tests/acceptance.suite.yml.example` to `tests/acceptance.suite.yml` to enable suite configuration
-
-2. Replace `codeception/base` package in `composer.json` with `codeception/codeception` to install full featured
-   version of Codeception
-
-3. Update dependencies with Composer 
-
-    ```
-    composer update  
-    ```
-
-4. Download [Selenium Server](http://www.seleniumhq.org/download/) and launch it:
-
-    ```
-    java -jar ~/selenium-server-standalone-x.xx.x.jar
-    ``` 
-
-5. (Optional) Create `yii2_basic_tests` database and update it by applying migrations if you have them.
-
-   ```
-   tests/bin/yii migrate
-   ```
-
-   The database configuration can be found at `config/test_db.php`.
-
-
-6. Start web server:
-
-    ```
-    tests/bin/yii serve
-    ```
-
-7. Now you can run all available tests
-
-   ```
-   # run all available tests
-   composer exec codecept run
-
-   # run acceptance tests
-   composer exec codecept run acceptance
-
-   # run only unit and functional tests
-   composer exec codecept run unit,functional
-   ```
-
-### Code coverage support
-
-By default, code coverage is disabled in `codeception.yml` configuration file, you should uncomment needed rows to be able
-to collect code coverage. You can run your tests and collect coverage with the following command:
-
-```
-#collect coverage for all tests
-composer exec codecept run -- --coverage-html --coverage-xml
-
-#collect coverage only for unit tests
-composer exec codecept run unit -- --coverage-html --coverage-xml
-
-#collect coverage for unit and functional tests
-composer exec codecept run functional,unit -- --coverage-html --coverage-xml
-```
-
-You can see code coverage output under the `tests/_output` directory.
+Ещё одно замечание, касающееся доступа. Неизвестно, проблема это конкретно моей 
+установки, или же это общая проблема для Yii под Linux, но для того, чтобы запустить 
+приложение, необходимо дать полный доступ на папку, в которой находится приложение и 
+на все вложенные папки (в Linux это можно сделать командой `sudo chmod 777 -R gb`, 
+находясь в папке доступной через веб, в которую вы скопировали проект), иначе у вас 
+выпадет исключение _permission denied_. Если Вы знаете более элегантное и верное 
+решение данной проблемы - используйте его. (под Windows таких проблем не было, скорее 
+всего, из-за установки в папку на веб-сервере и через Composer, в Linux я держу 
+проект в домашней папке и делаю deployment на веб-сервер).
+ 
+ ### Установка
+ 
+ Установка самого приложения достаточно проста. Выберите место, где вы собираетесь 
+ хранить проект (в домашней папке с развёртыванием на веб-сервере, либо в корневой 
+ директории, тут кто как предпочитает) и выполните следующие действия:
+ 
+ * Установите (если у вас ещё не установлен) [Composer](https://getcomposer.org/download/);
+ * Перейдите в корневую директорию приложения (_gb_) и выполните две команды:
+   * `composer global require "fxp/composer-asset-plugin:^1.2.0"`;
+   * `composer install`;
+ * После того как composer установил все зависимости, создайте базу данных articles на своём 
+ сервере БД (информацию о настройке БД вы можете найти в файле конфингурации базы 
+ данных `сonfig\db.php`. Установите настройки как указано в нём, или измените их на 
+ свои собственные);
+ * После создания БД, выполните миграцию для создания структуры базы данных 
+ (расположена в папке `migrations`, для её запуска просто выполните, находясь в 
+ папке приложения, команду `php yii migrate` и введите `yes` на вопрос Yii, хотите 
+ ли вы применить миграцию);
+ * Приложение готово к работе. Чтобы запустить его, наберите в браузере 
+ `http:\\<сервер:порт>\gb\web`.
+ 
+ ### Лицензия
+ 
+ Дело в том, что данное приложение (как и все проекты, находящиеся пока у меня на GitHub) создавалось исключительно 
+ для изучения Yii2 и предоставления дальнейшего портфолио. Если Вы хотите изучить Yii2, можете загрузить его себе 
+ и обучаться на нём. В коде Вы найдёте множество комментариев, которые подробно описывают процесс работы приложения 
+ на Yii2. Я не накладываю никаких патентных или лицензионных ограничений на него (надпись копирайт Никита Фисун 
+ на главной сделана для солидности и без проблем затирается). Надеюсь, Вам этот код послужит так же хорошо как мне
+ и заложит основу для Вашего дальнейшего обучения. Yii2 очень клёвый, подружитесь с ним ;)
+ 
+ Если вам нужен оригинальный README от Yii Framework 2, вы можете найти его в проекте под именем README-YII2.md.
+ Лицензия на Yii2 находится в файле LICENSE.md.
+ 
+ P.S. Если вы решили изучить Yii2 по двум простеньким приложениям (этому и articles), 
+ я советую начать с этого. Оно проще. После него можете приступить к articles.

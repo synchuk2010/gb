@@ -1,4 +1,7 @@
 <?php
+/*
+ * Настройки БД
+ * */
 
 return [
     'class' => 'yii\db\Connection',

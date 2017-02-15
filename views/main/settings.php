@@ -1,4 +1,7 @@
 <?php
+/*
+ * Отображает форму с редактированием настроек
+ * */
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
