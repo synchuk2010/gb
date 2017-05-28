@@ -22,7 +22,7 @@ class m170204_063632_create_initial_structure extends Migration
             'name' => $this->string(150)->notNull(),
             'email' => $this->string(100)->notNull(),
             'message' => $this->text()->notNull(),
-            'created' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
+            'created' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
             'user' => $this->integer(11)->defaultValue(null),
         ]);
         // Таблица с пользователями
