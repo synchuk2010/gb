@@ -41,22 +41,22 @@ $this->theme = 'cosmo';
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
-            ['label' => 'Добавить запись', 'url' => ['@web/main/add-entry']],
+            ['label' => 'Добавить запись', 'url' => ['add-entry']],
             Yii::$app->user->isGuest ? (
                 [
                     'label' => 'Войти/Зарегистрироваться',
                     'items' => [
-                        ['label' => 'Войти', 'url' => '@web/main/login'],
-                        ['label' => 'Зарегистрироваться', 'url' => '@web/main/register']
+                        ['label' => 'Войти', 'url' => 'login'],
+                        ['label' => 'Зарегистрироваться', 'url' => 'register']
                     ]
                 ]
             ) : ([
                 'label' => Yii::$app->user->identity->name,
                 'items' => [
-                    ['label' => 'Мои записи', 'url' => '@web/main/my-entries'],
-                    ['label' => 'Настройки', 'url' => '@web/main/settings'],
+                    ['label' => 'Мои записи', 'url' => 'my-entries'],
+                    ['label' => 'Настройки', 'url' => 'settings'],
                     '<li class="divider"></li>',
-                    '<li>' . Html::a('Выйти', '@web/main/logout',
+                    '<li>' . Html::a('Выйти', 'logout',
                         [
                             'title' => 'Выйти',
                             'data' => ['method' => 'post']
