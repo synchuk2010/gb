@@ -47,8 +47,8 @@ $this->theme = 'cosmo';
                 [
                     'label' => 'Войти/Зарегистрироваться',
                     'items' => [
-                        ['label' => 'Войти', 'url' => 'login'],
-                        ['label' => 'Зарегистрироваться', 'url' => 'register']
+                        ['label' => 'Войти', 'url' => '/main/login'],
+                        ['label' => 'Зарегистрироваться', 'url' => '/main/register']
                     ]
                 ]
             ) : ([
