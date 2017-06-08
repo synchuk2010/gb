@@ -55,6 +55,13 @@ class m170204_063632_create_initial_structure extends Migration
             'id',
             'CASCADE'
         );
+
+        $this->insert('users', [
+            'email' => 'demo@example.com',
+            'password' => Yii::$app->getSecurity()->generatePasswordHash('demo'),
+            'name' => 'Пользователь Гостевой',
+            'hash' => null,
+        ]);
     }
 
     /**
